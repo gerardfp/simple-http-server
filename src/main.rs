@@ -737,7 +737,7 @@ impl MainHandler {
                 link = encode_link_path(&link)
             ));
         } else {
-            rows.push(r#"<tr><td>&nbsp;</td></tr>"#.to_owned());
+            //rows.push(r#"<tr><td>&nbsp;</td></tr>"#.to_owned());
         }
 
         // Directory entries
@@ -780,21 +780,23 @@ impl MainHandler {
                 filename.clone()
             };
 
-            // Render one directory entry
-            rows.push(format!(
-                r#"
-<tr>
-  <td><a {linkstyle} href="/{link}">{label}</a></td>
-  <td style="color:#888;">[{modified}]</td>
-  <td><bold>{filesize}</bold></td>
-</tr>
-"#,
-                linkstyle = link_style,
-                link = encode_link_path(&link),
-                label = encode_minimal(&file_name_label),
-                modified = file_modified,
-                filesize = file_size
-            ));
+            let links = encode_link_path(&link);
+
+            if links.ends_with("png") || links.ends_with("jpg") || links.ends_with("jpeg") || links.ends_with("gif") || links.ends_with("webp") || links.ends_with("webm") {
+
+            
+                // Render one directory entry
+                rows.push(format!(
+                    r#"
+    <a href="/{links}"><img src="/{links}"></a>
+    "#,
+                    //linkstyle = link_style,
+                    links = links,
+                    //label = encode_minimal(&file_name_label),
+                    //modified = file_modified,
+                    //filesize = file_size
+                ));
+            }
         }
 
         // Optional upload form
@@ -821,16 +823,37 @@ impl MainHandler {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <style> a {{ text-decoration:none; }} </style>
+  <style> 
+  body {{ padding: 2em; }}
+  a {{ text-decoration:none; }}
+  img {{ 
+      object-fit: contain;
+      width: 12em; 
+      height: 12em;}} 
+  .images {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+  }}
+  </style>
 </head>
 <body>
   {upload_form}
+  <!--
   <div>{breadcrumb}</div>
+  
   <hr />
+  -->
+  <!--
   <table>
     {sort_links}
+    -->
+    <div class="images">
     {rows}
+    </div>
+    <!--
   </table>
+  -->
 </body>
 </html>
 "#,
